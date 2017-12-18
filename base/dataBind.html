@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vue 数据绑定</title>
+    <style type="text/css">
+        .tabs {
+            font-size: 14px;
+            color: #333;
+        }
+        .tabs-bar:after{
+            content: '';
+            display: block;
+            width: 100%;
+            height: 1px;
+            background: #d7dde4;
+            margin-top: -1px;
+        }
+        .tabs-tab{
+            display: inline-block;
+            padding: 4px 16px;
+            margin-right: 6px;
+            background: #fff;
+            border: 1px solid #d7ddd4;
+            cursor: pointer;
+            position: relative;
+        }
+        .tabs-tab-active{
+            color: #3399ff;
+            border-top: 1px solid #3399ff;
+            border-bottom: 1px solid #fff;
+        }
+        .tabs-tab-active:before{
+            content: '';
+            display: block;
+            height: 1px;
+            background: #3399ff;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+        }
+        .tabs-content{
+            padding: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="name" placeholder="你的名字">
+        <div>您好，{{name}}！</div>
+        <div v-pre>{{这里的内容不会被编译}}</div>
+        <div>时间过滤器{{date | formatDate('arg1')}}</div>
+        <my-component :message="name"></my-component>
+        <tabs :value="activityKey">
+            <pane label="标签一" name="1">标签一</pane>
+            <pane label="标签二" name="2">标签二</pane>
+            <pane label="标签三" name="3">标签三</pane>
+        </tabs>
+    </div>
+    <script src="../assets/vue.js"></script>
+    <script src="../components/pane.js"></script>
+    <script src="../components/tabs.js"></script>
+    <script>
+        var child = {
+            name: 'myComponent',
+            template: '<div>{{message}}</div>',
+            props: ['message'],
+            data: function () {
+                return {
+                }
+            }
+        }
+        window.app = new Vue({
+              el: '#app',
+             data: {
+                 name: 'vue',
+                 date: new Date(),
+                 timer: null,
+                 activityKey: '1'
+             },
+             components: {
+                  'my-component': child
+             },
+             filters: {
+                  formatDate: function (value) {
+                      var date = new Date(value);
+                      var year = date.getFullYear();
+                      var month = date.getMonth() + 1;
+                      var day = date.getDate();
+                      var hours = date.getHours();
+                      var mins = date.getMinutes();
+                      var secs = date.getSeconds();
+                      return year + '-' + month + '-' + day + ' ' + hours + ':' + mins + ':' + secs;
+                  }
+             },
+             created: function(){
+                 console.log(this.$el, this.name);
+             },
+             mounted: function(){
+                 console.log(this.$el, this.name);
+                 var _this = this;
+                 _this.timer = setInterval(function () {
+                     _this.date = new Date();
+                 }, 1000)
+             },
+             beforeDestroy: function () {
+                 if (this.timer) {
+                     clearInterval(this.timer)
+                 }
+             }
+        })
+    </script>
+</body>
+</html>
